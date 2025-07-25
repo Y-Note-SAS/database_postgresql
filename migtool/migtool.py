@@ -294,7 +294,8 @@ def migrate():
             if sequence_columns:
                 print("    Data transferred, updating sequences.")
                 for column, sequence in sequence_columns.items():
-                    new_cursor.execute(f"select setval('{sequence}', max(\"{column}\")) from \"{table}\";")
+                    # new_cursor.execute(f"select setval('{sequence}', max(\"{column}\")) from \"{table}\";")
+                    new_cursor.execute(f""" SELECT setval('{sequence}', GREATEST(COALESCE(MAX("{column}"), 1), 1))  FROM "{table}"; """)
             print("  Table " + table + " has been migrated.\n")
 
         # Table doesn't exist
