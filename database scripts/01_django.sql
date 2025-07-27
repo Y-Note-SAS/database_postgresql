@@ -619,38 +619,634 @@ CREATE INDEX "refresh_token_refreshtoken_user_id_45383307"
     ON "public"."refresh_token_refreshtoken" ("user_id");
 
 
+--
+-- TOC entry XXX (class 1259 OID XXXXX)
+-- Name: tblInsureeStatusReason; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE "public"."tblInsureeStatusReason" (
+    "ValidityFrom" timestamp(6) NOT NULL,
+    "ValidityTo" timestamp(6),
+    "LegacyID" integer,
+    "StatusReasonId" smallint NOT NULL,
+    "StatusReason" character varying(50) NOT NULL,
+    "Code" character varying(5) NOT NULL,
+    "status_type" character varying(2) NOT NULL
+);
 
 
---- Others fields
+--
+-- TOC entry XXX (class 2606 OID XXXXX)
+-- Name: tblInsureeStatusReason_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY "public"."tblInsureeStatusReason"
+    ADD CONSTRAINT "tblInsureeStatusReason_pkey" PRIMARY KEY ("StatusReasonId");
+
+
+--
+-- TOC entry 310 (class 1259 OID 21370)
+-- Name: policy_PolicyMutation; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE "public"."policy_PolicyMutation" (
+    "id" character(32) NOT NULL,
+    "mutation_id" "uuid" NOT NULL,
+    "policy_id" integer NOT NULL,
+    CONSTRAINT "location_PolicyMutation_mutation_id_11b3b8d1_fk_core_Mutation_Log_id"
+        FOREIGN KEY ("mutation_id") REFERENCES "public"."core_Mutation_Log" ("id"),
+    CONSTRAINT "location_PolicyMutation_policy_id_1caf1dc7_fk_tblPolicy_PolicyID"
+        FOREIGN KEY ("policy_id") REFERENCES "public"."tblPolicy" ("PolicyID"),
+    PRIMARY KEY ("id")
+);
+
+--
+-- TOC entry 3337 (class 1259 OID 21371)
+-- Name: location_PolicyMutation_policy_id_1caf1dc7; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX "location_PolicyMutation_policy_id_1caf1dc7"
+    ON "public"."policy_PolicyMutation" ("policy_id");
+
+
+--
+-- TOC entry 3338 (class 1259 OID 21372)
+-- Name: location_PolicyMutation_mutation_id_11b3b8d1; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX "location_PolicyMutation_mutation_id_11b3b8d1"
+    ON "public"."policy_PolicyMutation" ("mutation_id");
+
+
+--
+-- TOC entry 3340 (class 1259 OID 21374)
+-- Name: unique_policy_validity_to_null; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE UNIQUE INDEX "unique_policy_validity_to_null"
+    ON "public"."tblPolicyRenewals" ("PolicyID", "ValidityTo")
+    WHERE "ValidityTo" IS NULL;
+
+
+--
+-- TOC entry 3360 (class 1259 OID 21394)
+-- Name: contribution_PremiumMutation; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE "public"."contribution_PremiumMutation" (
+    "id" character(32) NOT NULL,
+    "mutation_id" "uuid" NOT NULL,
+    "premium_id" integer NOT NULL,
+    PRIMARY KEY ("id")
+);
+
+
+--
+-- TOC entry 3361 (class 2606 OID 21395)
+-- Name: contribution_PremiumMutation_mutation_id_cc6e4af5_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY "public"."contribution_PremiumMutation"
+    ADD CONSTRAINT "contribution_PremiumMutation_mutation_id_cc6e4af5_fk"
+    FOREIGN KEY ("mutation_id") REFERENCES "public"."core_Mutation_Log" ("id");
+
+
+--
+-- TOC entry 3362 (class 2606 OID 21396)
+-- Name: contribution_PremiumMutation_premium_id_3457b571_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY "public"."contribution_PremiumMutation"
+    ADD CONSTRAINT "contribution_PremiumMutation_premium_id_3457b571_fk"
+    FOREIGN KEY ("premium_id") REFERENCES "public"."tblPremium" ("PremiumId");
+
+
+--
+-- TOC entry 3363 (class 1259 OID 21397)
+-- Name: idx_contribution_PremiumMutation_premium_id; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX "idx_contribution_PremiumMutation_premium_id"
+    ON "public"."contribution_PremiumMutation" ("premium_id");
+
+
+--
+-- TOC entry 3364 (class 1259 OID 21398)
+-- Name: idx_contribution_PremiumMutation_mutation_id; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX "idx_contribution_PremiumMutation_mutation_id"
+    ON "public"."contribution_PremiumMutation" ("mutation_id");
+
+
+--
+-- TOC entry XXXX (class 1259 OID ...)
+-- Name: tblClaimServicesItems; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE "public"."tblClaimServicesItems" (
+    "idCsi" serial PRIMARY KEY,
+    "qty_provided" integer NULL,
+    "qty_displayed" integer NULL,
+    "created_date" timestamp with time zone NULL,
+    "price" numeric(18, 2) NULL,
+    "ClaimServiceID" integer NOT NULL,
+    "ItemID" integer NOT NULL,
+    "qty_adjusted" integer NULL
+);
+
+
+--
+-- TOC entry XXXX (class 2606 OID ...)
+-- Name: FK to tblClaimServices; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY "public"."tblClaimServicesItems"
+    ADD CONSTRAINT "tblClaimServicesItems_ClaimServiceID_985f5482_fk"
+    FOREIGN KEY ("ClaimServiceID") REFERENCES "public"."tblClaimServices" ("ClaimServiceID");
+
+
+--
+-- TOC entry XXXX (class 2606 OID ...)
+-- Name: FK to tblItems; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY "public"."tblClaimServicesItems"
+    ADD CONSTRAINT "tblClaimServicesItems_ItemID_feb1695e_fk"
+    FOREIGN KEY ("ItemID") REFERENCES "public"."tblItems" ("ItemID");
+
+
+--
+-- TOC entry XXXX (class 1259 OID ...)
+-- Name: Index on ItemID; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX "idx_tblClaimServicesItems_ItemID"
+    ON "public"."tblClaimServicesItems" ("ItemID");
+
+
+--
+-- TOC entry XXXX (class 1259 OID ...)
+-- Name: Index on ClaimServiceID; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX "idx_tblClaimServicesItems_ClaimServiceID"
+    ON "public"."tblClaimServicesItems" ("ClaimServiceID");
+
+
+--
+-- TOC entry XXXX (class 1259 OID ...)
+-- Name: tblClaimServicesService; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE "public"."tblClaimServicesService" (
+    "idCss" serial PRIMARY KEY,
+    "qty_provided" integer NULL,
+    "qty_displayed" integer NULL,
+    "created_date" timestamp with time zone NULL,
+    "price" numeric(18, 2) NULL,
+    "claimServiceID" integer NOT NULL,
+    "ServiceId" integer NOT NULL,
+    "qty_adjusted" integer NULL
+);
+
+
+--
+-- TOC entry XXXX (class 2606 OID ...)
+-- Name: FK to tblClaimServices; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY "public"."tblClaimServicesService"
+    ADD CONSTRAINT "tblClaimServicesService_claimServiceID_b7ddb073_fk"
+    FOREIGN KEY ("claimServiceID") REFERENCES "public"."tblClaimServices" ("ClaimServiceID");
+
+
+--
+-- TOC entry XXXX (class 2606 OID ...)
+-- Name: FK to tblServices; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY "public"."tblClaimServicesService"
+    ADD CONSTRAINT "tblClaimServicesService_ServiceId_885c2f65_fk"
+    FOREIGN KEY ("ServiceId") REFERENCES "public"."tblServices" ("ServiceID");
+
+
+--
+-- TOC entry XXXX (class 1259 OID ...)
+-- Name: Index on claimServiceID; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX "idx_tblClaimServicesService_claimServiceID"
+    ON "public"."tblClaimServicesService" ("claimServiceID");
+
+
+--
+-- TOC entry XXXX (class 1259 OID ...)
+-- Name: Index on ServiceId; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX "idx_tblClaimServicesService_ServiceId"
+    ON "public"."tblClaimServicesService" ("ServiceId");
+
+
+--
+-- TOC entry XXXX (class 1259 OID ...)
+-- Name: tblHF_program; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE "public"."tblHF_program" (
+    "id" serial PRIMARY KEY,
+    "healthfacility_id" integer NOT NULL,
+    "program_id" integer NOT NULL
+);
+
+
+--
+-- TOC entry XXXX (class 2606 OID ...)
+-- Name: tblHF_program_healthfacility_id_cf480a69_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY "public"."tblHF_program"
+    ADD CONSTRAINT "tblHF_program_healthfacility_id_cf480a69_fk"
+    FOREIGN KEY ("healthfacility_id") REFERENCES "public"."tblHF" ("HfID");
+
+
+--
+-- TOC entry XXXX (class 2606 OID ...)
+-- Name: tblHF_program_program_id_8bef9566_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY "public"."tblHF_program"
+    ADD CONSTRAINT "tblHF_program_program_id_8bef9566_fk"
+    FOREIGN KEY ("program_id") REFERENCES "public"."tblProgram" ("idProgram");
+
+
+--
+-- TOC entry XXXX (class 1259 OID ...)
+-- Name: idx_tblHF_program_program_id; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX "idx_tblHF_program_program_id"
+    ON "public"."tblHF_program" ("program_id");
+
+
+--
+-- TOC entry XXXX (class 1259 OID ...)
+-- Name: idx_tblHF_program_healthfacility_id; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX "idx_tblHF_program_healthfacility_id"
+    ON "public"."tblHF_program" ("healthfacility_id");
+
+
+--
+-- TOC entry XXXX (class 1259 OID ...)
+-- Name: uq_tblHF_program_healthfacility_id_program_id; Type: UNIQUE INDEX; Schema: public; Owner: postgres
+--
+
+CREATE UNIQUE INDEX "uq_tblHF_program_healthfacility_id_program_id"
+    ON "public"."tblHF_program" ("healthfacility_id", "program_id")
+    WHERE "healthfacility_id" IS NOT NULL AND "program_id" IS NOT NULL;
+
+
+--
+-- TOC entry XXXX (class 1259 OID ...)
+-- Name: tblProductContainedPackage; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE "public"."tblProductContainedPackage" (
+    "idPCP" serial PRIMARY KEY,
+    "qty" integer,
+    "created_date" timestamp(6),
+    "price" numeric(18,2),
+    "ItemID" integer NOT NULL,
+    "ServiceID" integer NOT NULL,
+    "status" boolean NOT NULL
+);
+
+
+--
+-- TOC entry XXXX (class 2606 OID ...)
+-- Name: tblProductContainedPackage_ItemID_9472c0aa_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY "public"."tblProductContainedPackage"
+    ADD CONSTRAINT "tblProductContainedPackage_ItemID_9472c0aa_fk"
+    FOREIGN KEY ("ItemID") REFERENCES "public"."tblItems" ("ItemID");
+
+
+--
+-- TOC entry XXXX (class 2606 OID ...)
+-- Name: tblProductContainedPackage_ServiceID_ee7cc682_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY "public"."tblProductContainedPackage"
+    ADD CONSTRAINT "tblProductContainedPackage_ServiceID_ee7cc682_fk"
+    FOREIGN KEY ("ServiceID") REFERENCES "public"."tblServices" ("ServiceID");
+
+
+--
+-- TOC entry XXXX (class 1259 OID ...)
+-- Name: idx_tblProductContainedPackage_ServiceID; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX "idx_tblProductContainedPackage_ServiceID"
+    ON "public"."tblProductContainedPackage" ("ServiceID");
+
+
+--
+-- TOC entry XXXX (class 1259 OID ...)
+-- Name: idx_tblProductContainedPackage_ItemID; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX "idx_tblProductContainedPackage_ItemID"
+    ON "public"."tblProductContainedPackage" ("ItemID");
+
+--
+-- TOC entry 4000 (class 1259 OID ...)
+-- Name: tblServiceContainedPackage; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE "public"."tblServiceContainedPackage" (
+    "idSCP" serial PRIMARY KEY,
+    "qty" integer NULL,
+    "created_date" timestamp with time zone NULL,
+    "price" numeric(18,2) NULL,
+    "ServiceId" integer NOT NULL,
+    "ServiceLinked" integer NOT NULL,
+    "status" boolean NOT NULL
+);
+
+--
+-- TOC entry 4001 (class 2606 OID ...)
+-- Name: tblServiceContainedPackage_ServiceId_e58d9434_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY "public"."tblServiceContainedPackage"
+    ADD CONSTRAINT "tblServiceContainedPackage_ServiceId_e58d9434_fk"
+    FOREIGN KEY ("ServiceId") REFERENCES "public"."tblServices" ("ServiceID");
+
+--
+-- TOC entry 4002 (class 2606 OID ...)
+-- Name: tblServiceContainedPackage_ServiceLinked_6e69fdb5_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY "public"."tblServiceContainedPackage"
+    ADD CONSTRAINT "tblServiceContainedPackage_ServiceLinked_6e69fdb5_fk"
+    FOREIGN KEY ("ServiceLinked") REFERENCES "public"."tblServices" ("ServiceID");
+
+--
+-- TOC entry 4003 (class 1259 OID ...)
+-- Name: idx_tblServiceContainedPackage_ServiceId; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX "idx_tblServiceContainedPackage_ServiceId"
+    ON "public"."tblServiceContainedPackage" ("ServiceId");
+
+--
+-- TOC entry 4004 (class 1259 OID ...)
+-- Name: idx_tblServiceContainedPackage_ServiceLinked; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX "idx_tblServiceContainedPackage_ServiceLinked"
+    ON "public"."tblServiceContainedPackage" ("ServiceLinked");
+
+-- 
+-- TOC entry XXXX (class 1259 OID ...)
+-- Name: claim_ClaimAttachment_ClaimAttachmentType; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE "public"."claim_ClaimAttachment_ClaimAttachmentType" (
+    "ValidityFrom" timestamp with time zone NOT NULL,
+    "ValidityTo" timestamp with time zone NULL,
+    "LegacyID" integer NULL,
+    "ClaimAttachmentTypeId" smallint NOT NULL,
+    "ClaimAttachmentType" varchar(50) NOT NULL,
+    "is_autogenerated" boolean NOT NULL,
+    "claim_general_type" varchar(10) NOT NULL,
+    PRIMARY KEY ("ClaimAttachmentTypeId")
+);
+
+
+--
+-- TOC entry 1234 (class 1259 OID 30001)
+-- Name: core_UserMutation; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE "public"."core_UserMutation" (
+    "id" "uuid" NOT NULL,
+    "mutation_id" "uuid" NOT NULL,
+    "core_user_id" "uuid" NOT NULL
+);
+
+
+--
+-- TOC entry 1235 (class 2606 OID 30002)
+-- Name: core_UserMutation_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY "public"."core_UserMutation"
+    ADD CONSTRAINT "core_UserMutation_pkey" PRIMARY KEY ("id");
+
+
+--
+-- TOC entry 1236 (class 2606 OID 30003)
+-- Name: core_UserMutation_core_user_id_b5140846_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY "public"."core_UserMutation"
+    ADD CONSTRAINT "core_UserMutation_core_user_id_b5140846_fk"
+    FOREIGN KEY ("core_user_id") REFERENCES "public"."core_User" ("id");
+
+
+--
+-- TOC entry 1237 (class 2606 OID 30004)
+-- Name: core_UserMutation_mutation_id_854fb79c_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY "public"."core_UserMutation"
+    ADD CONSTRAINT "core_UserMutation_mutation_id_854fb79c_fk"
+    FOREIGN KEY ("mutation_id") REFERENCES "public"."core_Mutation_Log" ("id");
+
+
+--
+-- TOC entry 1238 (class 1259 OID 30005)
+-- Name: core_UserMutation_mutation_id_854fb79c; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX "core_UserMutation_mutation_id_854fb79c"
+    ON "public"."core_UserMutation" USING btree ("mutation_id");
+
+
+--
+-- TOC entry 1239 (class 1259 OID 30006)
+-- Name: core_UserMutation_user_id_c9aaa69e; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX "core_UserMutation_user_id_c9aaa69e"
+    ON "public"."core_UserMutation" USING btree ("core_user_id");
+
+
+
+
+------------------------------------------- Others fields ------------------------------
 
 ALTER TABLE "public"."tblUsers"
-ADD COLUMN "LastLogin" timestamp with time zone;
+    ADD COLUMN "LastLogin" timestamp with time zone;
 
 ALTER TABLE "public"."tblLocations"
-ADD COLUMN "JsonExt" text;
+    ADD COLUMN "JsonExt" text;
 
 ALTER TABLE "public"."tblHF"
-ADD COLUMN "JsonExt" text,
-ADD COLUMN "BankName" text,
-ADD COLUMN "ContractStartDate" date NULL,
-ADD COLUMN "ContractEndDate" date NULL;
+    ADD COLUMN "JsonExt" text,
+    ADD COLUMN "BankName" text,
+    ADD COLUMN "ContractStartDate" date NULL,
+    ADD COLUMN "ContractEndDate" date NULL;
 
 ALTER TABLE "public"."tblInsuree"
-ADD COLUMN "JsonExt" text,
-ADD COLUMN "Dead" boolean DEFAULT FALSE,
-ADD COLUMN "DOD" date NULL,
-ADD COLUMN "DeathReason" varchar(500),
-ADD COLUMN "status" varchar(2) DEFAULT 'AC',
-ADD COLUMN "status_date" date,
-ADD COLUMN "StatusReason" integer;
+    ADD COLUMN "JsonExt" text,
+    ADD COLUMN "Dead" boolean DEFAULT FALSE,
+    ADD COLUMN "DOD" date NULL,
+    ADD COLUMN "DeathReason" varchar(500),
+    ADD COLUMN "status" varchar(2) DEFAULT 'AC',
+    ADD COLUMN "status_date" date,
+    ADD COLUMN "StatusReason" integer;
 
 ALTER TABLE "public"."tblFamilies"
-ADD COLUMN "JsonExt" text;
+    ADD COLUMN "JsonExt" text;
 
 ALTER TABLE "public"."tblConfirmationTypes"
-ADD COLUMN "is_confirmation_number_required" boolean DEFAULT FALSE;
+    ADD COLUMN "is_confirmation_number_required" boolean DEFAULT FALSE;
+
+ALTER TABLE "public"."core_Mutation_Log"
+    ADD COLUMN "JsonExt" text,
+    ADD COLUMN "autogenerated_code" text;
+
+ALTER TABLE "public"."tblPolicy"
+    ADD COLUMN "creationDate" date DEFAULT now() NULL,
+    ADD COLUMN "policyNumber" character varying(50) NULL;
+
+ALTER TABLE "public"."tblOfficer" 
+    ADD COLUMN "JsonExt" text;
+
+ALTER TABLE "public"."tblProduct"
+    ADD COLUMN "program" integer NULL,
+    ADD COLUMN "CeilingType" character(1) NULL,
+    ADD COLUMN "Max Age" integer NULL,
+    ADD COLUMN "Min Age" integer NULL;
+
+ALTER TABLE "public"."tblProduct"
+    ADD CONSTRAINT "product_program_id_fkey"
+    FOREIGN KEY ("program") REFERENCES "public"."tblProgram" ("idProgram")
+    ON DELETE NO ACTION;
+
+ALTER TABLE "public"."tblPremium"
+    ADD COLUMN "AllDetailsCommissionReport" timestamp with time zone NULL,
+    ADD COLUMN "OverviewCommissionReport" timestamp with time zone NULL,
+    ADD COLUMN "ReportingCommissionID" integer NULL;
+
+ALTER TABLE "public"."tblPremium"
+    DROP COLUMN "RowID";
+
+ALTER TABLE "public"."tblPremium"
+    ALTER COLUMN "CreatedDate" SET DEFAULT now();
+
+ALTER TABLE "public"."tblClaim"
+    ADD COLUMN "program" integer NULL,
+    ADD COLUMN "CareType" character varying(4) NULL,
+    ADD COLUMN "TDRResult" boolean NULL,
+    ADD COLUMN "TestNumber" character varying(255) NULL,
+    ADD COLUMN "RestoredClaim" integer NULL;
+
+ALTER TABLE "public"."tblClaim"
+    ADD CONSTRAINT "tblClaim_program_fkey"
+    FOREIGN KEY ("program") REFERENCES "public"."tblProgram" ("idProgram") ON DELETE NO ACTION;
+ALTER TABLE "public"."tblClaim"
+    ADD CONSTRAINT "tblClaim_restoredclaim_fkey"
+    FOREIGN KEY ("RestoredClaim") REFERENCES "public"."tblClaim" ("ClaimID") ON DELETE NO ACTION;
+
+ALTER TABLE "public"."tblClaim"
+    ALTER COLUMN "ClaimCode" TYPE character varying(40);
+
+CREATE INDEX "IX_tblClaim_code_insuree_uuid_status"
+    ON "public"."tblClaim" ("ClaimCode", "ClaimStatus");
+
+ALTER TABLE "public"."tblFeedback"
+    ADD COLUMN "Age" smallint NULL,
+    ADD COLUMN "MeansInformation" character varying(25) NULL,
+    ADD COLUMN "PolicyNational" boolean NULL,
+    ADD COLUMN "Pregnant" boolean NULL,
+    ADD COLUMN "Sexe" character varying(15) NULL;
+
+ALTER TABLE "public"."tblFeedback"
+    ALTER COLUMN "Asessment" TYPE integer;
+
+ALTER TABLE "public"."tblFeedbackPrompt"
+    ALTER COLUMN "PhoneNumber" TYPE character varying(50);
+
+ALTER TABLE "public"."tblFeedbackPrompt"
+    DROP CONSTRAINT IF EXISTS "tblFeedbackPrompt_officer_id_fkey";
+
+ALTER TABLE "public"."tblFeedbackPrompt"
+    ADD CONSTRAINT "tblFeedbackPrompt_officer_fkey"
+    FOREIGN KEY ("OfficerID") REFERENCES "public"."tblOfficer" ("OfficerID") ON DELETE NO ACTION;
+
+ALTER TABLE "public"."tblFeedbackPrompt"
+    DROP CONSTRAINT IF EXISTS "tblFeedbackPrompt_claim_id_fkey";
+
+ALTER TABLE "public"."tblFeedbackPrompt"
+    ADD CONSTRAINT "tblFeedbackPrompt_claim_fkey"
+    FOREIGN KEY ("ClaimID") REFERENCES "public"."tblClaim" ("ClaimID") ON DELETE NO ACTION;
+
+ALTER TABLE "public"."tblFeedbackPrompt"
+    RENAME COLUMN "OfficerID" TO "officer";
+
+ALTER TABLE "public"."tblFeedbackPrompt"
+    RENAME COLUMN "ClaimID" TO "claim";
+
+ALTER TABLE "public"."tblClaimAttachment"
+    ADD COLUMN "general_type" character varying(4) DEFAULT 'FILE' NOT NULL,
+    ADD COLUMN "module" text NULL;
+
+ALTER TABLE "public"."tblServices"
+    ADD COLUMN "ServPackageType" character varying(1) DEFAULT 'S',
+    ADD COLUMN "MaximumAmount" numeric(18,2),
+    ADD COLUMN "program" integer NULL,
+    ADD COLUMN "health_facility" integer NULL,
+    ADD COLUMN "manualPrice" boolean NOT NULL DEFAULT FALSE;
 
 
+ALTER TABLE "public"."tblServices"
+    ALTER COLUMN "ValidityFrom" SET DEFAULT now(),
+    ADD CONSTRAINT "tblServices_program_id_fkey"
+    FOREIGN KEY ("program") REFERENCES "public"."tblProgram" ("idProgram") ON DELETE NO ACTION;
+ALTER TABLE "public"."tblServices"
+    ADD CONSTRAINT "tblServices_health_facility_fkey"
+    FOREIGN KEY ("health_facility") REFERENCES "public"."tblHF" ("HfID") ON DELETE NO ACTION;
 
+DROP VIEW IF EXISTS public."uvwServiceUtilization";
+DROP VIEW IF EXISTS public."uvwServiceExpenditures";
 
+ALTER TABLE "public"."tblServices"
+    ALTER COLUMN "ServCode" TYPE character varying(20);
+
+ALTER TABLE "public"."tblItems"
+    ADD COLUMN "MaximumAmount" numeric(18,2),
+    ADD COLUMN "program" integer NULL,
+    ADD COLUMN "health_facility" integer NULL;
+
+-- Rendre les champs nullable + blank = accepter NULL en PostgreSQL
+ALTER TABLE "public"."tblItems"
+    ALTER COLUMN "MaximumAmount" DROP NOT NULL;
+
+-- Contraintes FK
+ALTER TABLE "public"."tblItems"
+    ADD CONSTRAINT "tblItems_program_id_fkey"
+    FOREIGN KEY ("program") REFERENCES "public"."tblProgram" ("idProgram") ON DELETE NO ACTION;
+
+ALTER TABLE "public"."tblItems"
+    ADD CONSTRAINT "tblItems_health_facility_fkey"
+    FOREIGN KEY ("health_facility") REFERENCES "public"."tblHF" ("HfID") ON DELETE NO ACTION;
+
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
