@@ -45,6 +45,7 @@ tblHFCatchment
 location_LocationMutation
 tblUsersDistricts
 tblICDCodes
+tblProgram
 tblItems
 tblServices
 tblPLItems
@@ -110,3 +111,8 @@ tblProductContainedPackage
 tblServiceContainedPackage
 claim_ClaimAttachment_ClaimAttachmentType
 core_UserMutation
+tblClaimItems
+tblInvoice
+tblInvoiceLineItem
+tblPaymentPlan
+product_ProductMutation
