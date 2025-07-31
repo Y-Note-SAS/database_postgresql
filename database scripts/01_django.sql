@@ -276,7 +276,7 @@ CREATE TABLE "public"."auth_permission" (
 );
 
 
-ALTER TABLE "public"."auth_permission" OWNER TO "sa";
+-- ALTER TABLE "public"."auth_permission" OWNER TO "postgres";
 
 --
 -- TOC entry 206 (class 1259 OID 20241)
@@ -292,7 +292,7 @@ CREATE SEQUENCE "public"."auth_permission_id_seq"
     CACHE 1;
 
 
-ALTER TABLE "public"."auth_permission_id_seq" OWNER TO "sa";
+-- ALTER TABLE "public"."auth_permission_id_seq" OWNER TO "postgres";
 
 --
 -- TOC entry 3993 (class 0 OID 0)
