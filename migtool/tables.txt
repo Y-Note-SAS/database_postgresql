@@ -94,7 +94,6 @@ tblPolicyRenewalDetails
 tblPolicyRenewals
 tblReporting
 tblSubmittedPhotos
-tblProgram
 tblProgram_user
 tblChequeSanteImport
 tblChequeSanteImportLine

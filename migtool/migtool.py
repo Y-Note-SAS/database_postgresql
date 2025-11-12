@@ -21,6 +21,27 @@ today = datetime.date.today()
 now = datetime.datetime.now()
 
 
+UUID_REGEX = re.compile(
+    r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'
+)
+
+def safe_uuid(value):
+    """
+    If 'value' is a valid UUID, it returns the same value.
+    Otherwise, it generates a stable UUID from the given string.
+    """
+    if value is None:
+        return None
+    if isinstance(value, bytes):
+        value = value.decode(errors="ignore")
+    if not isinstance(value, str):
+        value = str(value)
+    value = value.strip()
+    if UUID_REGEX.match(value):
+        return value 
+    return str(uuid.uuid5(uuid.NAMESPACE_OID, value))
+
+
 # loads connection configuration and migration settings from a file.
 # In future the settings file could be specified with a parameter.
 def get_settings_from_file():
@@ -217,6 +238,7 @@ def extract_sequence_name(column_default):
 
 
 def migrate():
+    uuid_mappings = {}
     # This list collects all db tables that exist only in one of the databases but not the other.
     lonely_tables = list()
     tables = get_tables_from_file()
@@ -277,6 +299,36 @@ def migrate():
             # Set up the values for the insert statement and execute
             print("    Moving data to new database.")
             for row in old_cursor:
+                # Patch : Convert ID to UUID if necessary
+                if table in ["core_TechnicalUser", "core_ModuleConfiguration"]: 
+                    row = list(row)
+                    try:
+                        id_index = [c.lower().strip('"') for c in new_cols_list].index('id')
+                        old_id = row[id_index]
+                        new_id = safe_uuid(old_id)
+                        row[id_index] = new_id
+                        # store the mapping
+                        if table not in uuid_mappings:
+                            uuid_mappings[table] = {}
+                        uuid_mappings[table][old_id] = new_id
+                    except (ValueError, IndexError):
+                        pass
+
+                # Update t_user_id in core_User using the mapping
+                if table == "core_User":
+                    row = list(row)
+                    try:
+                        t_user_index = [c.lower().strip('"') for c in new_cols_list].index('t_user_id')
+                        old_t_user_id = row[t_user_index]
+                        if old_t_user_id is not None:
+                            old_t_user_id = old_t_user_id.strip()
+                            row[t_user_index] = uuid_mappings.get("core_TechnicalUser", {}).get(old_t_user_id, None)
+                        else:
+                            row[t_user_index] = None
+                    except ValueError:
+                        pass
+
+                    
                 if table == "django_migrations" and row[1] not in migration_modules:
                     print(f"migration {row[1]}:{row[2]} skipped from transfer")
 
