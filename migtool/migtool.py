@@ -250,6 +250,8 @@ def migrate():
         # We only migrate if a table exists in both databases
         if table in new_tables and table in old_tables:
             print("  Migrating table " + table + ":")
+            new_cursor.execute("BEGIN;")  # Démarre une transaction par table
+            
             # delete all data from this table in the new DB
             if delete_data:
                 print("    Cleaning up table " + table + " in new database.")
@@ -353,8 +355,10 @@ def migrate():
                 for column, sequence in sequence_columns.items():
                     # new_cursor.execute(f"select setval('{sequence}', max(\"{column}\")) from \"{table}\";")
                     new_cursor.execute(f""" SELECT setval('{sequence}', GREATEST(COALESCE(MAX("{column}"), 1), 1))  FROM "{table}"; """)
+            new_cursor.execute("COMMIT;")
             print("  Table " + table + " has been migrated.\n")
-
+            print("Time taken (h:m:s): " + str(datetime.timedelta(seconds=time.time() - start_time)))
+            
         # Table doesn't exist
         else:
             print(f"\x1b[0;31;48mWARNING: Table {table} only exists in one of the databases "
@@ -373,7 +377,7 @@ def migrate():
 
     # Finally, commit the transaction and close the connections
     print("\nCommitting transaction.")
-    new_cursor.execute("COMMIT;")
+    #new_cursor.execute("COMMIT;")
     print("Closing Connections.")
     old_cursor.close()
     new_cursor.close()
@@ -389,4 +393,4 @@ if __name__ == "__main__":
     get_settings_from_file()
     connect()
     migrate()
-    print("Time taken (h:m:s): " + str(datetime.timedelta(seconds=time.time() - start_time)))
+    print("Total time taken (h:m:s): " + str(datetime.timedelta(seconds=time.time() - start_time)))
