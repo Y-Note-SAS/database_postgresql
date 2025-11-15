@@ -244,6 +244,8 @@ def migrate():
     tables = get_tables_from_file()
     (old_tables, new_tables) = get_db_tables()
     print("Starting migration transaction:")
+    print("  Disabling all foreign key constraints...")
+    new_cursor.execute("SET session_replication_role = replica;")
     # Defer all constraint checking to make sure that cross-dependencies are satisfied
     new_cursor.execute("SET CONSTRAINTS ALL DEFERRED;")
     for table in tables:
@@ -377,6 +379,8 @@ def migrate():
 
     # Finally, commit the transaction and close the connections
     print("\nCommitting transaction.")
+    print("\nRe-enabling foreign key constraints...")
+    new_cursor.execute("SET session_replication_role = origin;")
     #new_cursor.execute("COMMIT;")
     print("Closing Connections.")
     old_cursor.close()
