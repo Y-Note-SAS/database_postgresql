@@ -543,7 +543,7 @@ ALTER TABLE "tblPhotos" ALTER COLUMN "PhotoFolder" DROP NOT NULL;
 ALTER TABLE "tblInsuree" ALTER COLUMN "FamilyID" DROP NOT NULL;
 
 ALTER TABLE "tblInsuree"
-ALTER COLUMN "CHFID" TYPE character varying(20);
+ALTER COLUMN "CHFID" TYPE character VARCHAR(50);
 
 ALTER TABLE "tblClaim"
 ALTER COLUMN "ClaimCode" TYPE character varying(32);

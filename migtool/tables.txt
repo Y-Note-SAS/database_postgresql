@@ -46,13 +46,13 @@ location_LocationMutation
 tblUsersDistricts
 tblICDCodes
 tblProgram
+tblHF
 tblItems
 tblServices
 tblPLItems
 tblPLItemsDetail
 tblPLServices
 tblPLServicesDetail
-tblHF
 tblProduct
 tblProductItems
 tblProductServices
@@ -71,9 +71,9 @@ tblClaim
 tblClaimServices
 claim_ClaimMutation
 tblClaimItems
-tblClaimDedRem
 claim_ClaimAttachment
 health_check_db_testmodel
+tblClaimDedRem
 # the following tables have not yet been modeled in Django
 tblCeilingInterpretation
 tblControlNumber
@@ -94,7 +94,6 @@ tblPolicyRenewalDetails
 tblPolicyRenewals
 tblReporting
 tblSubmittedPhotos
-tblProgram
 tblProgram_user
 tblChequeSanteImport
 tblChequeSanteImportLine
