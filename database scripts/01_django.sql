@@ -1598,3 +1598,8 @@ SELECT setval('"public"."tblChequeSanteImportLine_idChequeImportLine_seq"', (SEL
 SELECT setval('"public"."cheque_updated_history_ChequeUpdatedID_seq"', (SELECT COALESCE(MAX("ChequeUpdatedID"), 1) FROM "public"."cheque_updated_history"), true);
 SELECT setval('"public"."tblProgram_idProgram_seq"', (SELECT COALESCE(MAX("idProgram"), 1) FROM "public"."tblProgram"), true);
 
+-- ALTER TABLE "public"."tblPhotos"
+--     ADD COLUMN "LegacyID" integer DEFAULT NULL,
+ALTER TABLE "tblPhotos"
+    ADD COLUMN "LegacyID" integer;
+
