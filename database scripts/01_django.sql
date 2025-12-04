@@ -1600,6 +1600,10 @@ SELECT setval('"public"."tblProgram_idProgram_seq"', (SELECT COALESCE(MAX("idPro
 
 -- ALTER TABLE "public"."tblPhotos"
 --     ADD COLUMN "LegacyID" integer DEFAULT NULL,
+-- ALTER TABLE "public"."tblPhotos"
+--     ADD COLUMN "photo" text DEFAULT NULL,
 ALTER TABLE "tblPhotos"
-    ADD COLUMN "LegacyID" integer;
+    ADD COLUMN "LegacyID" integer DEFAULT NULL;
+ALTER TABLE "tblPhotos"
+    ADD COLUMN "photo" text DEFAULT NULL;
 
