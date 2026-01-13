@@ -1541,6 +1541,18 @@ ALTER TABLE "public"."tblFeedbackPrompt"
 ALTER TABLE "public"."tblFeedbackPrompt"
     RENAME COLUMN "ClaimID" TO "claim";
 
+
+-- FROM MIGRATION CLAIM-0026_add_sequences
+
+CREATE SEQUENCE IF NOT EXISTS tblfeedbackprompt_feedbackpromptid_seq;
+
+SELECT setval('tblfeedbackprompt_feedbackpromptid_seq', COALESCE((SELECT MAX("FeedbackPromptID") FROM "tblFeedbackPrompt"), 0) + 1, false);
+
+ALTER TABLE public."tblFeedbackPrompt"
+ALTER COLUMN "FeedbackPromptID" SET DEFAULT nextval('tblfeedbackprompt_feedbackpromptid_seq');
+
+ALTER SEQUENCE tblfeedbackprompt_feedbackpromptid_seq OWNED BY public."tblFeedbackPrompt"."FeedbackPromptID";
+
 -- ALTER TABLE "public"."tblClaimAttachment"
 --     ADD COLUMN "general_type" character varying(4) DEFAULT 'FILE' NOT NULL,
 --     ADD COLUMN "module" text NULL;
@@ -1607,3 +1619,13 @@ ALTER TABLE "tblPhotos"
 ALTER TABLE "tblPhotos"
     ADD COLUMN "photo" text DEFAULT NULL;
 
+-- ALTER TABLE "public"."report_ReportDefinition"
+--     ADD COLUMN "LegacyID" integer DEFAULT NULL,
+--     RENAME COLUMN "validity_from" TO "ValidityFrom";
+--     RENAME COLUMN "validity_to" TO "ValidityTo";
+ALTER TABLE "public"."report_ReportDefinition"
+    ADD COLUMN "LegacyID" integer;
+ALTER TABLE "public"."report_ReportDefinition"
+    RENAME COLUMN "validity_from" TO "ValidityFrom";    
+ALTER TABLE "public"."report_ReportDefinition"
+    RENAME COLUMN "validity_to" TO "ValidityTo";
