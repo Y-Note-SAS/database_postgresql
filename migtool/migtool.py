@@ -376,7 +376,19 @@ def migrate():
             i += 1
     else:
         print("There were no missing tables. All tables have been migrated.")
-
+    print("Final sequence correction for cheque tables")
+    new_cursor.execute("""
+        SELECT setval(
+            '"tblChequeSanteImportLine_idChequeImportLine_seq"',
+            (SELECT COALESCE(MAX("idChequeImportLine"), 1) FROM public."tblChequeSanteImportLine"),
+            true
+        );
+        SELECT setval(
+            '"tblChequeSanteImport_ChequeImportID_seq"',
+            (SELECT COALESCE(MAX("ChequeImportID"), 1) FROM public."tblChequeSanteImport"),
+            true
+        );
+    """)
     # Finally, commit the transaction and close the connections
     print("\nCommitting transaction.")
     print("\nRe-enabling foreign key constraints...")
