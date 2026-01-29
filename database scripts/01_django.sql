@@ -1589,6 +1589,54 @@ CREATE OR REPLACE FUNCTION public."uspUpdateClaimFromPhone"(
             END;
             $$ LANGUAGE plpgsql;
 
+--
+-- TOC entry XXXX (class 1259 OID XXXXXX)
+-- Name: core_RoleMutation; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE "public"."core_RoleMutation" (
+    "id" uuid NOT NULL DEFAULT gen_random_uuid(),
+    "mutation_id" uuid NOT NULL,
+    "role_id" integer NOT NULL
+);
+
+--
+-- TOC entry XXXX (class 2606 OID XXXXXX)
+-- Name: core_RoleMutation_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY "public"."core_RoleMutation"
+    ADD CONSTRAINT "core_RoleMutation_pkey" PRIMARY KEY ("id");
+
+--
+-- INDEX
+--
+
+CREATE INDEX "core_RoleMutation_mutation_id_7fbbbfc8"
+    ON "public"."core_RoleMutation" USING btree ("mutation_id");
+
+
+CREATE INDEX "core_RoleMutation_role_id_5be2906d"
+    ON "public"."core_RoleMutation" USING btree ("role_id");
+
+--
+-- TOC entry XXXX (class 2606 OID XXXXXX)
+-- Name: core_RoleMutation_mutation_id_7fbbbfc8_fk_core_Mutation_Log_id; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY "public"."core_RoleMutation"
+    ADD CONSTRAINT "core_RoleMutation_mutation_id_7fbbbfc8_fk_core_Mutation_Log_id" 
+    FOREIGN KEY ("mutation_id") REFERENCES "public"."core_Mutation_Log"("id");
+
+--
+-- TOC entry XXXX (class 2606 OID XXXXXX)
+-- Name: core_RoleMutation_role_id_5be2906d_fk_tblRole_RoleID; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY "public"."core_RoleMutation"
+    ADD CONSTRAINT "core_RoleMutation_role_id_5be2906d_fk_tblRole_RoleID" 
+    FOREIGN KEY ("role_id") REFERENCES "public"."tblRole"("RoleID");
+
 
 
 ------------------------------------------- Others fields ------------------------------

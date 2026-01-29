@@ -115,3 +115,4 @@ tblInvoice
 tblInvoiceLineItem
 tblPaymentPlan
 product_ProductMutation
+core_RoleMutation
